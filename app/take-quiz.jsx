@@ -140,6 +140,7 @@ export default function TakeQuiz() {
     const quizResult = {
       id: Date.now().toString(),
       date: new Date().toISOString(),
+      title: quiz.title,
       type: quiz.type,
       score: score,
       totalQuestions: quiz.questions.length,
@@ -315,9 +316,12 @@ export default function TakeQuiz() {
   return (
     <ScreenWrapper backgroundColor="#FFF">
       <View style={styles.header}>
-        <Text style={styles.progressText}>
-          Question {currentQuestionIndex + 1} of {quiz.questions.length}
-        </Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.quizTitle}>{quiz.title}</Text>
+          <Text style={styles.progressText}>
+            Question {currentQuestionIndex + 1} of {quiz.questions.length}
+          </Text>
+        </View>
         {quiz.timerEnabled && (
           <View style={styles.timerContainer}>
             <Ionicons
@@ -333,7 +337,6 @@ export default function TakeQuiz() {
           </View>
         )}
       </View>
-
       <Animated.View style={[styles.questionContainer, { opacity: fadeAnim }]}>
         {renderQuestionContent()}
 
@@ -380,10 +383,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E5E5EA",
   },
+  headerLeft: {
+    flex: 1,
+  },
+  quizTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#4A90E2",
+    marginBottom: 5,
+  },
   progressText: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
-    color: "#333",
+    color: "#666",
   },
   timerContainer: {
     flexDirection: "row",
@@ -468,7 +480,6 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontWeight: "600",
   },
-
   resultScrollView: {
     flex: 1,
     backgroundColor: "#F5F5F5",

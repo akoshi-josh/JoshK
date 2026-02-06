@@ -20,6 +20,7 @@ export default function CreateQuiz() {
   const { type } = useLocalSearchParams();
   const router = useRouter();
 
+  const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState([
     {
       id: 1,
@@ -86,18 +87,21 @@ export default function CreateQuiz() {
       return;
     }
 
-    // Stop any ongoing speech
     await Speech.stop();
 
-    // Speak the question
     Speech.speak(question.question, {
-      language: "ko-KR", // Korean language
+      language: "ko-KR",
       pitch: 1.0,
-      rate: 0.75, // Slightly slower for better comprehension
+      rate: 0.75,
     });
   };
 
   const handleFinishAndStart = () => {
+    if (!quizTitle.trim()) {
+      Alert.alert("Missing Title", "Please enter a title for your quiz");
+      return;
+    }
+
     const isValid = questions.every(
       (q) =>
         q.question.trim() !== "" &&
@@ -106,7 +110,10 @@ export default function CreateQuiz() {
     );
 
     if (!isValid) {
-      alert("Please fill in all questions and answers");
+      Alert.alert(
+        "Incomplete Questions",
+        "Please fill in all questions and answers",
+      );
       return;
     }
 
@@ -114,7 +121,6 @@ export default function CreateQuiz() {
   };
 
   const startTest = async () => {
-    // Stop any playing speech before starting
     await Speech.stop();
 
     setShowStartModal(false);
@@ -122,6 +128,7 @@ export default function CreateQuiz() {
       pathname: "/take-quiz",
       params: {
         quizData: JSON.stringify({
+          title: quizTitle,
           type,
           questions,
           timerEnabled,
@@ -205,6 +212,17 @@ export default function CreateQuiz() {
         </View>
 
         <ScrollView style={styles.scrollView}>
+          <View style={styles.titleSection}>
+            <Text style={styles.titleLabel}>Quiz Title</Text>
+            <TextInput
+              style={styles.titleInput}
+              placeholder="Enter quiz title (e.g., Korean Colors, Basic Greetings)"
+              value={quizTitle}
+              onChangeText={setQuizTitle}
+              placeholderTextColor="#302f2f"
+            />
+          </View>
+
           {questions.map((question, qIndex) => (
             <View key={question.id} style={styles.questionCard}>
               <Text style={styles.questionNumber}>Question {qIndex + 1}</Text>
@@ -218,6 +236,7 @@ export default function CreateQuiz() {
                     ? "Enter question (will be spoken)"
                     : "Enter question"
                 }
+                placeholderTextColor={"grey"}
                 value={question.question}
                 onChangeText={(text) =>
                   updateQuestion(question.id, "question", text)
@@ -229,6 +248,7 @@ export default function CreateQuiz() {
               <TextInput
                 style={[styles.input, styles.correctInput]}
                 placeholder="Enter correct answer"
+                placeholderTextColor={"grey"}
                 value={question.correctAnswer}
                 onChangeText={(text) =>
                   updateQuestion(question.id, "correctAnswer", text)
@@ -241,6 +261,7 @@ export default function CreateQuiz() {
                   key={index}
                   style={[styles.input, styles.wrongInput]}
                   placeholder={`Wrong answer ${index + 1}`}
+                  placeholderTextColor={"grey"}
                   value={wa}
                   onChangeText={(text) =>
                     updateWrongAnswer(question.id, index, text)
@@ -297,6 +318,7 @@ export default function CreateQuiz() {
             <View style={styles.modalContent}>
               <Ionicons name="rocket" size={60} color="#4A90E2" />
               <Text style={styles.modalTitle}>Ready to Start?</Text>
+              <Text style={styles.modalQuizTitle}>"{quizTitle}"</Text>
               <Text style={styles.modalSubtitle}>
                 You have {questions.length} question
                 {questions.length > 1 ? "s" : ""}
@@ -350,6 +372,35 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  titleSection: {
+    backgroundColor: "#FFF",
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    borderLeftWidth: 4,
+    borderLeftColor: "#4A90E2",
+  },
+  titleLabel: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#4A90E2",
+    marginBottom: 10,
+  },
+  titleInput: {
+    borderWidth: 2,
+    borderColor: "#4A90E2",
+    borderRadius: 10,
+    padding: 15,
+    fontSize: 15,
+    fontWeight: "600",
+    backgroundColor: "#F0F8FF",
+    color: "#333",
   },
   questionCard: {
     backgroundColor: "#FFF",
@@ -452,13 +503,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#666",
+    color: "#000000",
     marginBottom: 8,
     marginTop: 5,
   },
   correctInput: {
     borderColor: "#4CAF50",
     backgroundColor: "#F1F8F4",
+    color: "black",
   },
   wrongInput: {
     borderColor: "#FF6B6B",
@@ -542,7 +594,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     marginTop: 15,
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  modalQuizTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    color: "#4A90E2",
+    marginBottom: 15,
+    textAlign: "center",
+    fontStyle: "italic",
   },
   modalSubtitle: {
     fontSize: 16,

@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import ScreenWrapper from "../../components/ScreenWrapper";
 
 export default function Profile() {
   const openLink = (url) => {
@@ -16,178 +15,170 @@ export default function Profile() {
   };
 
   return (
-    <ScreenWrapper>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerSection}>
-          <View style={styles.avatarContainer}>
-            <Image
-              source={require("../../assets/id.png")}
-              style={styles.avatarImage}
-              resizeMode="cover"
-            />
-          </View>
-          <Text style={styles.name}>Josh Ralph Singson</Text>
-          <Text style={styles.role}>Mobile App Developer</Text>
-          <View style={styles.ageBadge}>
-            <Ionicons name="calendar" size={16} color="#666" />
-            <Text style={styles.ageText}>22 years old</Text>
-          </View>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <View style={styles.headerSection}>
+        <View style={styles.avatarContainer}>
+          <Image
+            source={require("../../assets/id.png")}
+            style={styles.avatarImage}
+            resizeMode="cover"
+          />
         </View>
+        <Text style={styles.name}>Josh Ralph Singson</Text>
+        <Text style={styles.role}>Mobile App Developer</Text>
+        <View style={styles.ageBadge}>
+          <Ionicons name="calendar" size={16} color="#666" />
+          <Text style={styles.ageText}>22 years old</Text>
+        </View>
+      </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="information-circle" size={24} color="#4A90E2" />
-            <Text style={styles.sectionTitle}>About Me</Text>
-          </View>
-          <Text style={styles.description}>
-            I'm a passionate 4th-year Infromation tekonologia student on the
-            verge of graduation, specializing in mobile application development.
-            I love creating innovative solutions that make a real impact on
-            people's lives.
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="information-circle" size={24} color="#4A90E2" />
+          <Text style={styles.sectionTitle}>About Me</Text>
+        </View>
+        <Text style={styles.description}>
+          I'm a passionate 4th-year Infromation tekonologia student on the verge
+          of graduation, specializing in mobile application development. I love
+          creating innovative solutions that make a real impact on people's
+          lives.
+        </Text>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="school" size={24} color="#4ECDC4" />
+          <Text style={styles.sectionTitle}>Education</Text>
+        </View>
+        <View style={styles.infoCard}>
+          <Text style={styles.infoTitle}>
+            Bachelor of Science in Computer Science
           </Text>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="school" size={24} color="#4ECDC4" />
-            <Text style={styles.sectionTitle}>Education</Text>
-          </View>
-          <View style={styles.infoCard}>
-            <Text style={styles.infoTitle}>
-              Bachelor of Science in Computer Science
-            </Text>
-            <Text style={styles.infoSubtitle}>
-              4th Year - Graduating Student
-            </Text>
-            <View style={styles.statusBadge}>
-              <Ionicons name="trophy" size={16} color="#FFD700" />
-              <Text style={styles.statusText}>Final Year</Text>
-            </View>
+          <Text style={styles.infoSubtitle}>4th Year - Graduating Student</Text>
+          <View style={styles.statusBadge}>
+            <Ionicons name="trophy" size={16} color="#FFD700" />
+            <Text style={styles.statusText}>Final Year</Text>
           </View>
         </View>
+      </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="code-slash" size={24} color="#FF6B6B" />
-            <Text style={styles.sectionTitle}>Recent Projects</Text>
-          </View>
-
-          <View style={styles.projectCard}>
-            <View style={styles.projectHeader}>
-              <Ionicons name="hand-left" size={30} color="#9B59B6" />
-              <View style={styles.projectInfo}>
-                <Text style={styles.projectTitle}>
-                  Sign Language Translator
-                </Text>
-                <Text style={styles.projectSubtitle}>Mobile Application</Text>
-              </View>
-            </View>
-            <Text style={styles.projectDescription}>
-              Developed an innovative mobile app that translates sign language
-              gestures into text and speech in real-time using machine learning
-              and computer vision. This app helps bridge communication gaps for
-              the deaf and hard-of-hearing community.
-            </Text>
-            <View style={styles.techStack}>
-              <View style={styles.techBadge}>
-                <Text style={styles.techText}>React Native</Text>
-              </View>
-              <View style={styles.techBadge}>
-                <Text style={styles.techText}>TensorFlow</Text>
-              </View>
-              <View style={styles.techBadge}>
-                <Text style={styles.techText}>ML</Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.projectCard}>
-            <View style={styles.projectHeader}>
-              <Ionicons name="book" size={30} color="#4A90E2" />
-              <View style={styles.projectInfo}>
-                <Text style={styles.projectTitle}>
-                  JoshK - Korean Flashcard App
-                </Text>
-                <Text style={styles.projectSubtitle}>
-                  Educational Mobile App
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.projectDescription}>
-              An interactive Korean language learning application featuring
-              multiple quiz modes (images, audio, text, shuffle) with timer
-              functionality and progress tracking. Designed to make learning
-              Korean engaging and effective.
-            </Text>
-            <View style={styles.devDuration}>
-              <Ionicons name="time" size={18} color="#4A90E2" />
-              <Text style={styles.durationText}>Development Time: 8 hours</Text>
-            </View>
-          </View>
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="code-slash" size={24} color="#FF6B6B" />
+          <Text style={styles.sectionTitle}>Recent Projects</Text>
         </View>
 
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="star" size={24} color="#FFD700" />
-            <Text style={styles.sectionTitle}>Technical Skills</Text>
-          </View>
-          <View style={styles.skillsGrid}>
-            <View style={styles.skillCard}>
-              <Ionicons name="phone-portrait" size={28} color="#4A90E2" />
-              <Text style={styles.skillText}>Mobile Development</Text>
-            </View>
-            <View style={styles.skillCard}>
-              <Ionicons name="logo-react" size={28} color="#61DAFB" />
-              <Text style={styles.skillText}>React Native</Text>
-            </View>
-            <View style={styles.skillCard}>
-              <Ionicons name="logo-javascript" size={28} color="#F7DF1E" />
-              <Text style={styles.skillText}>JavaScript</Text>
-            </View>
-            <View style={styles.skillCard}>
-              <Ionicons name="git-branch" size={28} color="#F05032" />
-              <Text style={styles.skillText}>Git & GitHub</Text>
-            </View>
-            <View style={styles.skillCard}>
-              <Ionicons name="server" size={28} color="#68A063" />
-              <Text style={styles.skillText}>Node.js</Text>
-            </View>
-            <View style={styles.skillCard}>
-              <Ionicons name="flask" size={28} color="#9B59B6" />
-              <Text style={styles.skillText}>Machine Learning</Text>
+        <View style={styles.projectCard}>
+          <View style={styles.projectHeader}>
+            <Ionicons name="hand-left" size={30} color="#9B59B6" />
+            <View style={styles.projectInfo}>
+              <Text style={styles.projectTitle}>Sign Language Translator</Text>
+              <Text style={styles.projectSubtitle}>Mobile Application</Text>
             </View>
           </View>
-        </View>
-
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="mail" size={24} color="#95E1D3" />
-            <Text style={styles.sectionTitle}>Get In Touch</Text>
-          </View>
-          <Text style={styles.contactDescription}>
-            I'm always open to discussing new projects, creative ideas, or
-            opportunities to be part of your vision. Feel free to reach out!
+          <Text style={styles.projectDescription}>
+            Developed an innovative mobile app that translates sign language
+            gestures into text and speech in real-time using machine learning
+            and computer vision. This app helps bridge communication gaps for
+            the deaf and hard-of-hearing community.
           </Text>
-          <View style={styles.contactButtons}>
-            <TouchableOpacity style={styles.contactButton}>
-              <Ionicons name="mail" size={20} color="#FFF" />
-              <Text style={styles.contactButtonText}>Email Me</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.contactButton}>
-              <Ionicons name="logo-github" size={20} color="#FFF" />
-              <Text style={styles.contactButtonText}>GitHub</Text>
-            </TouchableOpacity>
+          <View style={styles.techStack}>
+            <View style={styles.techBadge}>
+              <Text style={styles.techText}>React Native</Text>
+            </View>
+            <View style={styles.techBadge}>
+              <Text style={styles.techText}>TensorFlow</Text>
+            </View>
+            <View style={styles.techBadge}>
+              <Text style={styles.techText}>ML</Text>
+            </View>
           </View>
         </View>
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            Made with ❤️ by Josh Ralph Singson
+        <View style={styles.projectCard}>
+          <View style={styles.projectHeader}>
+            <Ionicons name="book" size={30} color="#4A90E2" />
+            <View style={styles.projectInfo}>
+              <Text style={styles.projectTitle}>
+                JoshK - Korean Flashcard App
+              </Text>
+              <Text style={styles.projectSubtitle}>Educational Mobile App</Text>
+            </View>
+          </View>
+          <Text style={styles.projectDescription}>
+            An interactive Korean language learning application featuring
+            multiple quiz modes (images, audio, text, shuffle) with timer
+            functionality and progress tracking. Designed to make learning
+            Korean engaging and effective.
           </Text>
-          <Text style={styles.footerSubtext}>© 2024 - All Rights Reserved</Text>
+          <View style={styles.devDuration}>
+            <Ionicons name="time" size={18} color="#4A90E2" />
+            <Text style={styles.durationText}>Development Time: 8 hours</Text>
+          </View>
         </View>
-      </ScrollView>
-    </ScreenWrapper>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="star" size={24} color="#FFD700" />
+          <Text style={styles.sectionTitle}>Technical Skills</Text>
+        </View>
+        <View style={styles.skillsGrid}>
+          <View style={styles.skillCard}>
+            <Ionicons name="phone-portrait" size={28} color="#4A90E2" />
+            <Text style={styles.skillText}>Mobile Development</Text>
+          </View>
+          <View style={styles.skillCard}>
+            <Ionicons name="logo-react" size={28} color="#61DAFB" />
+            <Text style={styles.skillText}>React Native</Text>
+          </View>
+          <View style={styles.skillCard}>
+            <Ionicons name="logo-javascript" size={28} color="#F7DF1E" />
+            <Text style={styles.skillText}>JavaScript</Text>
+          </View>
+          <View style={styles.skillCard}>
+            <Ionicons name="git-branch" size={28} color="#F05032" />
+            <Text style={styles.skillText}>Git & GitHub</Text>
+          </View>
+          <View style={styles.skillCard}>
+            <Ionicons name="server" size={28} color="#68A063" />
+            <Text style={styles.skillText}>Node.js</Text>
+          </View>
+          <View style={styles.skillCard}>
+            <Ionicons name="flask" size={28} color="#9B59B6" />
+            <Text style={styles.skillText}>Machine Learning</Text>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Ionicons name="mail" size={24} color="#95E1D3" />
+          <Text style={styles.sectionTitle}>Get In Touch</Text>
+        </View>
+        <Text style={styles.contactDescription}>
+          I'm always open to discussing new projects, creative ideas, or
+          opportunities to be part of your vision. Feel free to reach out!
+        </Text>
+        <View style={styles.contactButtons}>
+          <TouchableOpacity style={styles.contactButton}>
+            <Ionicons name="mail" size={20} color="#FFF" />
+            <Text style={styles.contactButtonText}>Email Me</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.contactButton}>
+            <Ionicons name="logo-github" size={20} color="#FFF" />
+            <Text style={styles.contactButtonText}>GitHub</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          Made with ❤️ by Josh Ralph Singson
+        </Text>
+        <Text style={styles.footerSubtext}>© 2024 - All Rights Reserved</Text>
+      </View>
+    </ScrollView>
   );
 }
 
