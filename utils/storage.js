@@ -1,7 +1,23 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { File } from "expo-file-system/next";
 
 const QUIZ_HISTORY_KEY = "@quiz_history";
 const PROFILE_STATS_KEY = "@profile_stats";
+
+// Helper function to clean up old images
+export const deleteImageFile = async (imageUri) => {
+  try {
+    if (imageUri && imageUri.includes("file://")) {
+      const file = new File(imageUri);
+      const exists = await file.exists();
+      if (exists) {
+        await file.delete();
+      }
+    }
+  } catch (error) {
+    console.error("Error deleting image:", error);
+  }
+};
 
 export const saveQuizResult = async (quizResult) => {
   try {
@@ -31,6 +47,17 @@ export const getQuizHistory = async () => {
 export const deleteQuizHistory = async (quizId) => {
   try {
     const existingHistory = await getQuizHistory();
+    const quizToDelete = existingHistory.find((quiz) => quiz.id === quizId);
+
+    // Delete associated images
+    if (quizToDelete && quizToDelete.questions) {
+      for (const question of quizToDelete.questions) {
+        if (question.media) {
+          await deleteImageFile(question.media);
+        }
+      }
+    }
+
     const newHistory = existingHistory.filter((quiz) => quiz.id !== quizId);
     await AsyncStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify(newHistory));
     return true;
@@ -42,6 +69,18 @@ export const deleteQuizHistory = async (quizId) => {
 
 export const clearAllHistory = async () => {
   try {
+    // Delete all images before clearing history
+    const existingHistory = await getQuizHistory();
+    for (const quiz of existingHistory) {
+      if (quiz.questions) {
+        for (const question of quiz.questions) {
+          if (question.media) {
+            await deleteImageFile(question.media);
+          }
+        }
+      }
+    }
+
     await AsyncStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify([]));
     return true;
   } catch (error) {

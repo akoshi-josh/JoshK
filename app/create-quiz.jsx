@@ -1,4 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
+import { File, Paths } from "expo-file-system/next";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
@@ -65,17 +66,33 @@ export default function CreateQuiz() {
   };
 
   const pickImage = async (questionId) => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
 
-    if (!result.canceled) {
-      updateQuestion(questionId, "media", result.assets[0].uri);
+      if (!result.canceled) {
+        const selectedUri = result.assets[0].uri;
+
+        const filename = `quiz_img_${questionId}_${Date.now()}.jpg`;
+
+        const destinationFile = new File(Paths.document, filename);
+
+        const sourceFile = new File(selectedUri);
+
+        await sourceFile.copy(destinationFile);
+
+        updateQuestion(questionId, "media", destinationFile.uri);
+
+        Alert.alert("Success", "Image saved to app storage!");
+      }
+    } catch (error) {
+      console.error("Error picking image:", error);
+      Alert.alert("Error", "Failed to save image. Please try again.");
     }
   };
-
   const testAudioQuestion = async (questionId) => {
     const question = questions.find((q) => q.id === questionId);
 
