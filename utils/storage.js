@@ -9,9 +9,12 @@ export const deleteImageFile = async (imageUri) => {
   try {
     if (imageUri && imageUri.includes("file://")) {
       const file = new File(imageUri);
-      const exists = await file.exists();
-      if (exists) {
+      // Check if file exists before deleting
+      try {
         await file.delete();
+      } catch (deleteError) {
+        // File might not exist or already deleted, which is fine
+        console.log("File already deleted or doesn't exist:", imageUri);
       }
     }
   } catch (error) {
@@ -22,7 +25,52 @@ export const deleteImageFile = async (imageUri) => {
 export const saveQuizResult = async (quizResult) => {
   try {
     const existingHistory = await getQuizHistory();
-    const newHistory = [quizResult, ...existingHistory];
+
+    // Find if a quiz with the same title already exists
+    const existingQuizIndex = existingHistory.findIndex(
+      (quiz) => quiz.title === quizResult.title,
+    );
+
+    let newHistory;
+    if (existingQuizIndex !== -1) {
+      // Delete old images if they're being replaced
+      const oldQuiz = existingHistory[existingQuizIndex];
+      if (oldQuiz.questions) {
+        for (const question of oldQuiz.questions) {
+          if (question.media) {
+            const newQuestion = quizResult.questions.find(
+              (q) => q.id === question.id,
+            );
+            if (!newQuestion || question.media !== newQuestion.media) {
+              await deleteImageFile(question.media);
+            }
+          }
+        }
+      }
+
+      // Update existing quiz instead of adding new one
+      newHistory = [...existingHistory];
+      newHistory[existingQuizIndex] = {
+        ...quizResult,
+        id: existingHistory[existingQuizIndex].id, // Keep the same ID
+        firstAttemptDate:
+          existingHistory[existingQuizIndex].firstAttemptDate ||
+          existingHistory[existingQuizIndex].date,
+        date: new Date().toISOString(), // Update to latest attempt date
+        attempts: (existingHistory[existingQuizIndex].attempts || 1) + 1,
+      };
+    } else {
+      // Add new quiz to history
+      newHistory = [
+        {
+          ...quizResult,
+          firstAttemptDate: quizResult.date,
+          attempts: 1,
+        },
+        ...existingHistory,
+      ];
+    }
+
     await AsyncStorage.setItem(QUIZ_HISTORY_KEY, JSON.stringify(newHistory));
 
     await updateProfileStats(quizResult);

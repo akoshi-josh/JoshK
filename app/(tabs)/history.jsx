@@ -75,6 +75,26 @@ export default function History() {
     return `${minutes}m`;
   };
 
+  const handleEditQuiz = (quiz) => {
+    const quizData = {
+      id: quiz.id, // Pass the quiz ID for updating
+      title: quiz.title || "Untitled Quiz",
+      type: quiz.type,
+      questions: quiz.questions,
+      timerEnabled: quiz.timerEnabled,
+      timerDuration: quiz.timerDuration || 30,
+    };
+
+    router.push({
+      pathname: "/create-quiz",
+      params: {
+        type: quiz.type,
+        editMode: "true",
+        quizData: JSON.stringify(quizData),
+      },
+    });
+  };
+
   const handleRetakeQuiz = (quiz) => {
     const quizData = {
       title: quiz.title || "Untitled Quiz",
@@ -172,9 +192,20 @@ export default function History() {
           <Ionicons name={getTypeIcon(item.type)} size={18} color="#FFF" />
           <Text style={styles.typeText}>{item.type}</Text>
         </View>
-        <TouchableOpacity onPress={() => handleDeleteQuiz(item.id)}>
-          <Ionicons name="trash-outline" size={22} color="#FF6B6B" />
-        </TouchableOpacity>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            onPress={() => handleEditQuiz(item)}
+            style={styles.iconButton}
+          >
+            <Ionicons name="pencil" size={22} color="#4A90E2" />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => handleDeleteQuiz(item.id)}
+            style={styles.iconButton}
+          >
+            <Ionicons name="trash-outline" size={22} color="#FF6B6B" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {item.title && (
@@ -450,6 +481,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
     textTransform: "capitalize",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    gap: 12,
+  },
+  iconButton: {
+    padding: 4,
   },
   quizTitle: {
     fontSize: 17,

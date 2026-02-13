@@ -19,6 +19,19 @@ export default function TakeQuiz() {
   const router = useRouter();
   const quiz = JSON.parse(quizData);
 
+  // Shuffle function
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Shuffle questions once when component mounts
+  const [shuffledQuestions] = useState(() => shuffleArray(quiz.questions));
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
@@ -32,7 +45,7 @@ export default function TakeQuiz() {
 
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  const currentQuestion = quiz.questions[currentQuestionIndex];
+  const currentQuestion = shuffledQuestions[currentQuestionIndex];
 
   const [shuffledAnswers, setShuffledAnswers] = useState([]);
 
@@ -55,7 +68,7 @@ export default function TakeQuiz() {
     }
 
     return () => {
-      Speech.stop(); // Stop speech when component unmounts or question changes
+      Speech.stop();
     };
   }, [currentQuestionIndex]);
 
@@ -76,19 +89,18 @@ export default function TakeQuiz() {
   }, [timeLeft, selectedAnswer]);
 
   const playAudio = async () => {
-    await Speech.stop(); // Stop any ongoing speech
+    await Speech.stop();
 
     Speech.speak(currentQuestion.question, {
-      language: "ko-KR", // Korean language
+      language: "ko-KR",
       pitch: 1.0,
-      rate: 0.75, // Slightly slower for better comprehension
+      rate: 0.75,
     });
   };
 
   const handleAnswerSelect = async (answer) => {
     if (selectedAnswer !== null) return;
 
-    // Stop audio when answer is selected
     await Speech.stop();
 
     setSelectedAnswer(answer);
@@ -120,7 +132,7 @@ export default function TakeQuiz() {
       duration: 200,
       useNativeDriver: true,
     }).start(() => {
-      if (currentQuestionIndex < quiz.questions.length - 1) {
+      if (currentQuestionIndex < shuffledQuestions.length - 1) {
         setCurrentQuestionIndex(currentQuestionIndex + 1);
         setTimeLeft(quiz.timerEnabled ? quiz.timerDuration : null);
         fadeAnim.setValue(1);
@@ -135,7 +147,7 @@ export default function TakeQuiz() {
 
   const saveQuizToHistory = async (endTime) => {
     const timeTaken = endTime - quizStartTime;
-    const percentage = ((score / quiz.questions.length) * 100).toFixed(0);
+    const percentage = ((score / shuffledQuestions.length) * 100).toFixed(0);
 
     const quizResult = {
       id: Date.now().toString(),
@@ -143,12 +155,12 @@ export default function TakeQuiz() {
       title: quiz.title,
       type: quiz.type,
       score: score,
-      totalQuestions: quiz.questions.length,
+      totalQuestions: shuffledQuestions.length,
       percentage: parseFloat(percentage),
       timeTaken: timeTaken,
       timerEnabled: quiz.timerEnabled,
       answers: answers,
-      questions: quiz.questions,
+      questions: quiz.questions, // Keep original questions for retake
     };
 
     await saveQuizResult(quizResult);
@@ -184,6 +196,9 @@ export default function TakeQuiz() {
           );
         }
         return null;
+      case "numbers":
+      case "grammar":
+      case "text":
       default:
         return null;
     }
@@ -207,9 +222,9 @@ export default function TakeQuiz() {
   };
 
   if (showResult) {
-    const percentage = ((score / quiz.questions.length) * 100).toFixed(0);
+    const percentage = ((score / shuffledQuestions.length) * 100).toFixed(0);
     const timeTaken = quizEndTime - quizStartTime;
-    const wrongAnswers = quiz.questions.length - score;
+    const wrongAnswers = shuffledQuestions.length - score;
 
     return (
       <ScreenWrapper>
@@ -221,6 +236,7 @@ export default function TakeQuiz() {
               color={percentage >= 70 ? "#FFD700" : "#C0C0C0"}
             />
             <Text style={styles.resultTitle}>Quiz Complete!</Text>
+            <Text style={styles.resultQuizTitle}>"{quiz.title}"</Text>
           </View>
 
           <View style={styles.statsContainer}>
@@ -317,9 +333,11 @@ export default function TakeQuiz() {
     <ScreenWrapper backgroundColor="#FFF">
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Text style={styles.quizTitle}>{quiz.title}</Text>
+          <Text style={styles.quizTitle} numberOfLines={1}>
+            {quiz.title}
+          </Text>
           <Text style={styles.progressText}>
-            Question {currentQuestionIndex + 1} of {quiz.questions.length}
+            Question {currentQuestionIndex + 1} of {shuffledQuestions.length}
           </Text>
         </View>
         {quiz.timerEnabled && (
@@ -337,6 +355,7 @@ export default function TakeQuiz() {
           </View>
         )}
       </View>
+
       <Animated.View style={[styles.questionContainer, { opacity: fadeAnim }]}>
         {renderQuestionContent()}
 
@@ -385,15 +404,16 @@ const styles = StyleSheet.create({
   },
   headerLeft: {
     flex: 1,
+    marginRight: 10,
   },
   quizTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#4A90E2",
-    marginBottom: 5,
+    marginBottom: 4,
   },
   progressText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: "600",
     color: "#666",
   },
@@ -495,6 +515,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     marginTop: 15,
+  },
+  resultQuizTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#4A90E2",
+    marginTop: 8,
+    fontStyle: "italic",
   },
   statsContainer: {
     flexDirection: "row",

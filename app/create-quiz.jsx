@@ -3,7 +3,7 @@ import { File, Paths } from "expo-file-system/next";
 import * as ImagePicker from "expo-image-picker";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import * as Speech from "expo-speech";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Modal,
@@ -18,8 +18,9 @@ import {
 import ScreenWrapper from "../components/ScreenWrapper";
 
 export default function CreateQuiz() {
-  const { type } = useLocalSearchParams();
+  const { type, editMode, quizData: quizDataParam } = useLocalSearchParams();
   const router = useRouter();
+  const isEditMode = editMode === "true";
 
   const [quizTitle, setQuizTitle] = useState("");
   const [questions, setQuestions] = useState([
@@ -34,6 +35,24 @@ export default function CreateQuiz() {
   const [timerEnabled, setTimerEnabled] = useState(false);
   const [timerDuration, setTimerDuration] = useState("30");
   const [showStartModal, setShowStartModal] = useState(false);
+  const [editQuizId, setEditQuizId] = useState(null);
+
+  // Load quiz data if in edit mode
+  useEffect(() => {
+    if (isEditMode && quizDataParam) {
+      try {
+        const parsedData = JSON.parse(quizDataParam);
+        setQuizTitle(parsedData.title || "");
+        setQuestions(parsedData.questions || []);
+        setTimerEnabled(parsedData.timerEnabled || false);
+        setTimerDuration(String(parsedData.timerDuration || 30));
+        setEditQuizId(parsedData.id || null);
+      } catch (error) {
+        console.error("Error parsing quiz data:", error);
+        Alert.alert("Error", "Failed to load quiz data");
+      }
+    }
+  }, [isEditMode, quizDataParam]);
 
   const addQuestion = () => {
     const newQuestion = {
@@ -93,6 +112,7 @@ export default function CreateQuiz() {
       Alert.alert("Error", "Failed to save image. Please try again.");
     }
   };
+
   const testAudioQuestion = async (questionId) => {
     const question = questions.find((q) => q.id === questionId);
 
@@ -223,7 +243,9 @@ export default function CreateQuiz() {
             <Ionicons name="arrow-back" size={24} color="#333" />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>
-            Create {type?.charAt(0).toUpperCase() + type?.slice(1)} Quiz
+            {isEditMode
+              ? "Edit Quiz"
+              : `Create ${type?.charAt(0).toUpperCase() + type?.slice(1)} Quiz`}
           </Text>
           <View style={{ width: 24 }} />
         </View>
@@ -236,7 +258,7 @@ export default function CreateQuiz() {
               placeholder="Enter quiz title (e.g., Korean Colors, Basic Greetings)"
               value={quizTitle}
               onChangeText={setQuizTitle}
-              placeholderTextColor="#302f2f"
+              placeholderTextColor="#8f8f8f"
             />
           </View>
 
@@ -319,7 +341,9 @@ export default function CreateQuiz() {
                 onPress={handleFinishAndStart}
               >
                 <Ionicons name="checkmark-circle" size={24} color="#FFF" />
-                <Text style={styles.finishButtonText}>Finish & Start Test</Text>
+                <Text style={styles.finishButtonText}>
+                  {isEditMode ? "Update & Test" : "Finish & Start Test"}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -334,7 +358,9 @@ export default function CreateQuiz() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
               <Ionicons name="rocket" size={60} color="#4A90E2" />
-              <Text style={styles.modalTitle}>Ready to Start?</Text>
+              <Text style={styles.modalTitle}>
+                {isEditMode ? "Quiz Updated!" : "Ready to Start?"}
+              </Text>
               <Text style={styles.modalQuizTitle}>"{quizTitle}"</Text>
               <Text style={styles.modalSubtitle}>
                 You have {questions.length} question

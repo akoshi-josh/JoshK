@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ScreenWrapper from "../../components/ScreenWrapper";
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
@@ -11,6 +12,8 @@ export default function Home() {
     { id: "images", name: "Images", icon: "image", color: "#FF6B6B" },
     { id: "audio", name: "Audio", icon: "volume-high", color: "#4ECDC4" },
     { id: "text", name: "Text", icon: "text", color: "#95E1D3" },
+    { id: "numbers", name: "Numbers", icon: "calculator", color: "#9B59B6" },
+    { id: "grammar", name: "Grammar", icon: "book", color: "#E67E22" },
     { id: "shuffle", name: "Shuffle", icon: "shuffle", color: "#F38181" },
   ];
 
@@ -20,53 +23,55 @@ export default function Home() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Learn Korean</Text>
-      <Text style={styles.subtitle}>Start your quiz journey!</Text>
+    <ScreenWrapper>
+      <View style={styles.container}>
+        <Text style={styles.title}>Learn Korean</Text>
+        <Text style={styles.subtitle}>Start your quiz journey!</Text>
 
-      <TouchableOpacity
-        style={styles.startButton}
-        onPress={() => setShowModal(true)}
-      >
-        <Text style={styles.buttonText}>Start New Quiz</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.startButton}
+          onPress={() => setShowModal(true)}
+        >
+          <Text style={styles.buttonText}>Start New Quiz</Text>
+        </TouchableOpacity>
 
-      <Modal
-        visible={showModal}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Quiz Type</Text>
+        <Modal
+          visible={showModal}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setShowModal(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Select Quiz Type</Text>
 
-            <View style={styles.quizTypeGrid}>
-              {quizTypes.map((type) => (
-                <TouchableOpacity
-                  key={type.id}
-                  style={[
-                    styles.quizTypeButton,
-                    { backgroundColor: type.color },
-                  ]}
-                  onPress={() => handleQuizTypeSelect(type.id)}
-                >
-                  <Ionicons name={type.icon} size={40} color="#FFF" />
-                  <Text style={styles.quizTypeText}>{type.name}</Text>
-                </TouchableOpacity>
-              ))}
+              <View style={styles.quizTypeGrid}>
+                {quizTypes.map((type) => (
+                  <TouchableOpacity
+                    key={type.id}
+                    style={[
+                      styles.quizTypeButton,
+                      { backgroundColor: type.color },
+                    ]}
+                    onPress={() => handleQuizTypeSelect(type.id)}
+                  >
+                    <Ionicons name={type.icon} size={32} color="#FFF" />
+                    <Text style={styles.quizTypeText}>{type.name}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowModal(false)}
+              >
+                <Text style={styles.closeButtonText}>Cancel</Text>
+              </TouchableOpacity>
             </View>
-
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setShowModal(false)}
-            >
-              <Text style={styles.closeButtonText}>Cancel</Text>
-            </TouchableOpacity>
           </View>
-        </View>
-      </Modal>
-    </View>
+        </Modal>
+      </View>
+    </ScreenWrapper>
   );
 }
 
@@ -75,7 +80,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#E3F2FD",
     padding: 20,
   },
   title: {
@@ -115,8 +119,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 20,
     padding: 25,
-    width: "85%",
-    maxWidth: 400,
+    width: "90%",
+    maxWidth: 450,
   },
   modalTitle: {
     fontSize: 24,
@@ -131,12 +135,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   quizTypeButton: {
-    width: "48%",
+    width: "31%",
     aspectRatio: 1,
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 12,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -145,9 +149,9 @@ const styles = StyleSheet.create({
   },
   quizTypeText: {
     color: "#FFF",
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: "600",
-    marginTop: 10,
+    marginTop: 8,
   },
   closeButton: {
     marginTop: 10,
