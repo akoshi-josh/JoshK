@@ -4,16 +4,14 @@ import { File } from "expo-file-system/next";
 const QUIZ_HISTORY_KEY = "@quiz_history";
 const PROFILE_STATS_KEY = "@profile_stats";
 
-// Helper function to clean up old images
 export const deleteImageFile = async (imageUri) => {
   try {
     if (imageUri && imageUri.includes("file://")) {
       const file = new File(imageUri);
-      // Check if file exists before deleting
+
       try {
         await file.delete();
       } catch (deleteError) {
-        // File might not exist or already deleted, which is fine
         console.log("File already deleted or doesn't exist:", imageUri);
       }
     }
@@ -26,14 +24,12 @@ export const saveQuizResult = async (quizResult) => {
   try {
     const existingHistory = await getQuizHistory();
 
-    // Find if a quiz with the same title already exists
     const existingQuizIndex = existingHistory.findIndex(
       (quiz) => quiz.title === quizResult.title,
     );
 
     let newHistory;
     if (existingQuizIndex !== -1) {
-      // Delete old images if they're being replaced
       const oldQuiz = existingHistory[existingQuizIndex];
       if (oldQuiz.questions) {
         for (const question of oldQuiz.questions) {
@@ -48,19 +44,17 @@ export const saveQuizResult = async (quizResult) => {
         }
       }
 
-      // Update existing quiz instead of adding new one
       newHistory = [...existingHistory];
       newHistory[existingQuizIndex] = {
         ...quizResult,
-        id: existingHistory[existingQuizIndex].id, // Keep the same ID
+        id: existingHistory[existingQuizIndex].id,
         firstAttemptDate:
           existingHistory[existingQuizIndex].firstAttemptDate ||
           existingHistory[existingQuizIndex].date,
-        date: new Date().toISOString(), // Update to latest attempt date
+        date: new Date().toISOString(),
         attempts: (existingHistory[existingQuizIndex].attempts || 1) + 1,
       };
     } else {
-      // Add new quiz to history
       newHistory = [
         {
           ...quizResult,
@@ -97,7 +91,6 @@ export const deleteQuizHistory = async (quizId) => {
     const existingHistory = await getQuizHistory();
     const quizToDelete = existingHistory.find((quiz) => quiz.id === quizId);
 
-    // Delete associated images
     if (quizToDelete && quizToDelete.questions) {
       for (const question of quizToDelete.questions) {
         if (question.media) {
@@ -117,7 +110,6 @@ export const deleteQuizHistory = async (quizId) => {
 
 export const clearAllHistory = async () => {
   try {
-    // Delete all images before clearing history
     const existingHistory = await getQuizHistory();
     for (const quiz of existingHistory) {
       if (quiz.questions) {
