@@ -64,7 +64,20 @@ export default function CreateQuiz() {
   const isShuffleQuiz = type === "shuffle";
 
   const [quizTitle, setQuizTitle] = useState("");
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState(
+    // Only start with empty array for numbers and shuffle
+    isNumbersQuiz || isShuffleQuiz
+      ? []
+      : [
+          {
+            id: 1,
+            question: "",
+            correctAnswer: "",
+            wrongAnswers: ["", "", ""],
+            media: null,
+          },
+        ],
+  );
   const [timerEnabled, setTimerEnabled] = useState(false);
   const [timerDuration, setTimerDuration] = useState("30");
   const [showStartModal, setShowStartModal] = useState(false);
@@ -890,15 +903,13 @@ export default function CreateQuiz() {
               </View>
 
               <View style={styles.actionButtons}>
-                {(isShuffleQuiz || (!isNumbersQuiz && !isShuffleQuiz)) && (
-                  <TouchableOpacity
-                    style={styles.addButton}
-                    onPress={addQuestion}
-                  >
-                    <Ionicons name="add-circle" size={24} color="#FFF" />
-                    <Text style={styles.addButtonText}>Add Question</Text>
-                  </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                  style={styles.addButton}
+                  onPress={addQuestion}
+                >
+                  <Ionicons name="add-circle" size={24} color="#FFF" />
+                  <Text style={styles.addButtonText}>Add Question</Text>
+                </TouchableOpacity>
 
                 <TouchableOpacity
                   style={styles.finishButton}
@@ -1018,6 +1029,7 @@ export default function CreateQuiz() {
   );
 }
 
+// Styles remain exactly the same as before...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -4,3 +4,4 @@ npx expo install expo-router
 npm install @expo/vector-icons
 
 
+eas build --platform android --profile production
