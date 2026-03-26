@@ -107,26 +107,27 @@ export default function TakeQuiz() {
 
     const isCorrect = answer?.isCorrect || false;
 
+    const answerRecord = {
+      question: currentQuestion.question,
+      selectedAnswer: answer?.text || "No answer (Time out)",
+      correctAnswer: currentQuestion.correctAnswer,
+      isCorrect: isCorrect,
+    };
+
+    const updatedAnswers = [...answers, answerRecord];
+    setAnswers(updatedAnswers);
+
+    const updatedScore = isCorrect ? score + 1 : score;
     if (isCorrect) {
-      setScore(score + 1);
+      setScore(updatedScore);
     }
 
-    setAnswers([
-      ...answers,
-      {
-        question: currentQuestion.question,
-        selectedAnswer: answer?.text || "No answer (Time out)",
-        correctAnswer: currentQuestion.correctAnswer,
-        isCorrect: isCorrect,
-      },
-    ]);
-
     setTimeout(() => {
-      handleNextQuestion();
+      handleNextQuestion(updatedScore, updatedAnswers);
     }, 800);
   };
 
-  const handleNextQuestion = () => {
+  const handleNextQuestion = (currentScore, currentAnswers) => {
     Animated.timing(fadeAnim, {
       toValue: 0,
       duration: 200,
@@ -139,33 +140,33 @@ export default function TakeQuiz() {
       } else {
         const endTime = Date.now();
         setQuizEndTime(endTime);
-        saveQuizToHistory(endTime);
+        saveQuizToHistory(endTime, currentScore, currentAnswers);
         setShowResult(true);
       }
     });
   };
-
-  const saveQuizToHistory = async (endTime) => {
+  const saveQuizToHistory = async (endTime, finalScore, finalAnswers) => {
     const timeTaken = endTime - quizStartTime;
-    const percentage = ((score / shuffledQuestions.length) * 100).toFixed(0);
+    const percentage = ((finalScore / shuffledQuestions.length) * 100).toFixed(
+      0,
+    );
 
     const quizResult = {
       id: Date.now().toString(),
       date: new Date().toISOString(),
       title: quiz.title,
       type: quiz.type,
-      score: score,
+      score: finalScore,
       totalQuestions: shuffledQuestions.length,
       percentage: parseFloat(percentage),
       timeTaken: timeTaken,
       timerEnabled: quiz.timerEnabled,
-      answers: answers,
-      questions: quiz.questions, // Keep original questions for retake
+      answers: finalAnswers,
+      questions: quiz.questions,
     };
 
     await saveQuizResult(quizResult);
   };
-
   const renderQuestionContent = () => {
     switch (quiz.type) {
       case "images":
